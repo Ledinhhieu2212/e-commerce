@@ -1,71 +1,86 @@
 import React, { useState } from "react";
 import AliceCarousel from "react-alice-carousel";
-import "react-alice-carousel/lib/alice-carousel.css";
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import "react-alice-carousel/lib/alice-carousel.css";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { mens_kurta } from "../../Data/men_kurta";
 
-const HomeSectionCarousel = () => {
+const HomeSectionCarousel = ({ data, sectionName }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const responsive = {
     0: { items: 1 },
     568: { items: 3 },
-    1024: { items: 5.5 },
+    1024: { items: 5 },
   };
 
-  const slidePrev =() => setActiveIndex(activeIndex-1);
-  const slideNext =() => setActiveIndex(activeIndex+1);
+  const syncActiveIndex = ({ item }) => {
+    setActiveIndex(item);
+  };
 
-  const syncActiveIndex = ({item}) => setActiveIndex(item) 
+  function renderPrevButton() {
+    return (
+      <Button
+        variant="contained"
+        className="z-50 bg-white"
+        sx={{
+          position: "absolute",
+          top: "8rem",
+          left: "0rem",
+          transform: "translateX(-50%) rotate(90deg)",
+          bgcolor: "white",
+        }}
+        aria-label="Prev"
+      >
+        <KeyboardArrowRight
+          sx={{ transform: "rotate(90deg)", color: "black" }}
+        />
+      </Button>
+    );
+  }
 
-  const items = mens_kurta.slice(0,10).map((item) => <HomeSectionCard product={item} />);
+  function renderNextButton() {
+    return (
+      <Button
+        variant="contained"
+        className="z-50 bg-gray-100"
+        sx={{
+          position: "absolute",
+          top: "8rem",
+          right: "0rem",
+          transform: "translateX(50%) rotate(90deg)",
+          bgcolor: "white",
+        }}
+        aria-label="Next"
+      >
+        <KeyboardArrowLeft
+          sx={{ transform: "rotate(90deg)", color: "black" }}
+        />
+      </Button>
+    );
+  }
+
+  const items = data
+    .slice(0, 10)
+    .map((item) => <HomeSectionCard product={item} />);
   return (
-    <div className="border" >
-      <div className="relative p-5 ">
+    <div className="border">
+      <h2 className="text-2xl font-extralight text-gray-800 py-5">
+        {sectionName}
+      </h2>
+      <div className="relative p-5 overflow-hidden">
         <AliceCarousel
-          items={items}
-          disableButtonsControls
-          responsive={responsive}
           disableDotsControls
+          // disableButtonsControls
+          items={items}
+          responsive={responsive}
           onSlideChange={syncActiveIndex}
           activeIndex={activeIndex}
+          renderNextButton={activeIndex <= items.length && renderNextButton}
+          renderPrevButton={activeIndex >= 0 && renderPrevButton}
         />
-        {activeIndex !== items.length-5 && <Button
-        onClick={slideNext}
-          variant="contained"
-          className="z-50 bg-white"
-          sx={{
-            position: 'absolute',
-            top: "8rem",
-            right: "0rem",
-            transform: "translateX(50%) rotate(90deg)",
-            bgcolor:"white"
-          }}
-          aria-label="next"
-        >
-            <KeyboardArrowLeftIcon  sx={{transform:"rotate(90deg)",              color:"black"}}/>
-        </Button>}
-        {activeIndex !== 0 && <Button
-          variant="contained"
-          className="z-50 bg-white"
-          onClick={slidePrev}
-          sx={{
-            position: 'absolute',
-            top: "8rem",
-            left: "0rem",
-            transform: "translateX(-50%) rotate(-90deg)",
-            bgcolor:"white"
-          }}
-          aria-label="next"
-        >
-            <KeyboardArrowLeftIcon  sx={{transform:"rotate(90deg)" ,
-            color:"black"}}/>
-        </Button>}
       </div>
     </div>
   );
 };
-
 export default HomeSectionCarousel;
